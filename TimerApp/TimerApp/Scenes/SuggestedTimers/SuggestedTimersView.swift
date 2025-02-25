@@ -10,28 +10,29 @@ import SwiftUI
 struct SuggestedTimersView: View {
     @ObservedObject var viewModel: TimerViewModel
     @Environment(\.dismiss) private var dismiss
+    @AppStorage("selectedLanguage") var selectedLanguageRawValue: String = AppLanguage.english.rawValue
     
     let suggestedTimers = [
-        ("03:00", "ჩაის დაყენება"),
-        ("07:00", "HIIT ვარჯიში"),
-        ("10:00", "კვერცხის მოხარშვა"),
-        ("15:00", "შესვენება"),
-        ("20:00", "ყავის პაუზა"),
-        ("25:00", "პომოდორო"),
-        ("30:00", "მედიტაცია"),
-        ("45:00", "ვარჯიში"),
-        ("60:00", "სამუშაო სესია"),
-        ("50:00", "მეცადინეობა"),
-        ("40:00", "წიგნის წაკითხვა"),
-        ("30:00", "ვიდეო თამაშები"),
-        ("1:20:00", "იოგა"),
-        ("12:00", "ორცხობილის გამოცხობა"),
-        ("20:00", "ხატვა")
+        ("03:00", "Tea Preparation", "ჩაის დაყენება"),
+        ("07:00", "HIIT Workout", "HIIT ვარჯიში"),
+        ("10:00", "Boiling Eggs", "კვერცხის მოხარშვა"),
+        ("15:00", "Break", "შესვენება"),
+        ("20:00", "Coffee Break", "ყავის პაუზა"),
+        ("25:00", "Pomodoro", "პომოდორო"),
+        ("30:00", "Meditation", "მედიტაცია"),
+        ("45:00", "Exercise", "ვარჯიში"),
+        ("60:00", "Work Session", "სამუშაო სესია"),
+        ("50:00", "Study", "მეცადინეობა"),
+        ("40:00", "Reading", "წიგნის წაკითხვა"),
+        ("30:00", "Video Games", "ვიდეო თამაშები"),
+        ("1:20:00", "Yoga", "იოგა"),
+        ("12:00", "Baking Cake", "ორცხობილის გამოცხობა"),
+        ("20:00", "Drawing", "ხატვა")
     ]
     
     var body: some View {
         VStack(alignment: .leading) {
-            Text("სწრაფი ტაიმერები")
+            Text(selectedLanguageRawValue == "English" ? "Quick Timers" : "სწრაფი ტაიმერები")
                 .font(.title2)
                 .fontWeight(.bold)
                 .padding(.top, 20)
@@ -44,7 +45,9 @@ struct SuggestedTimersView: View {
                     spacing: 12
                 ) {
                     ForEach(Array(suggestedTimers.enumerated()), id: \.offset) { index, timer in
-                        let (time, title) = timer
+                        let (time, englishTitle, georgianTitle) = timer
+                        let title = selectedLanguageRawValue == "English" ? englishTitle : georgianTitle
+                        
                         Button(action: {
                             addSuggestedTimer(time: time, title: title)
                             dismiss()

@@ -11,6 +11,9 @@ struct TimerView: View {
     @ObservedObject var viewModel = TimerViewModel()
     @Environment(\.dismiss) private var dismiss
     @State private var showSuggestedTimers = false
+    @State private var showSettings = false
+    @AppStorage("selectedLanguage") var selectedLanguageRawValue: String = AppLanguage.english.rawValue
+
     
     var body: some View {
         NavigationView {
@@ -33,18 +36,32 @@ struct TimerView: View {
             SuggestedTimersView(viewModel: viewModel)
                 .presentationDetents([.height(395)])
         }
+        
+        .sheet(isPresented: $showSettings) {
+            SettingsView()
+                .presentationDetents([.height(155)])
+        }
     }
     
     // MARK: - Title View
     private var titleView: some View {
         HStack{
-            Text("ტაიმერები")
+            Button(action: {
+                showSettings = true
+            }) {
+                Image(systemName: "gearshape")
+                    .foregroundColor(.white)
+                    .padding()
+            }
+            .padding(.trailing, 20)
+            Spacer()
+            
+            Text(selectedLanguageRawValue == "English" ? "Timers" : "ტაიმერები")
                 .font(.largeTitle)
                 .fontWeight(.bold)
                 .foregroundColor(.white)
                 .padding(.top, 20)
                 .padding(.bottom, 10)
-                .padding(.leading, 20)
             Spacer()
             Button(action: {
                 showSuggestedTimers = true
@@ -79,7 +96,7 @@ struct TimerView: View {
             TextField(
                 "",
                 text: $viewModel.timerTitle,
-                prompt: Text("ტაიმერის სახელი...")
+                prompt: Text(selectedLanguageRawValue == "English" ? "Timer name" : "ტაიმერის სახელი")
                     .foregroundColor(Color(hex: "757575"))
             )
             .padding()
@@ -89,16 +106,16 @@ struct TimerView: View {
             
             
             HStack(spacing: 10) {
-                self.timeInputTextField(text: $viewModel.hours, placeholder: "სთ")
-                self.timeInputTextField(text: $viewModel.minutes, placeholder: "წთ")
-                self.timeInputTextField(text: $viewModel.seconds, placeholder: "წმ")
+                self.timeInputTextField(text: $viewModel.hours, placeholder: selectedLanguageRawValue == "English" ? "HH" : "სთ")
+                self.timeInputTextField(text: $viewModel.minutes, placeholder: selectedLanguageRawValue == "English" ? "MM" : "წთ")
+                self.timeInputTextField(text: $viewModel.seconds, placeholder: selectedLanguageRawValue == "English" ? "SS" : "წმ")
             }
             
             
             Button(action: {
                 viewModel.addTimer()
             }) {
-                Text("დამატება")
+                Text(selectedLanguageRawValue == "English" ? "Add" : "დამატება")
                     .frame(maxWidth: .infinity)
                     .padding()
                     .background(Color.blue)
@@ -112,8 +129,4 @@ struct TimerView: View {
         .frame(maxWidth: .infinity, maxHeight: 190)
         .edgesIgnoringSafeArea(.bottom)
     }
-}
-
-#Preview {
-    TimerView()
 }

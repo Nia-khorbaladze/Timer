@@ -9,6 +9,7 @@ import SwiftUI
 
 struct TimerItemView: View {
     @ObservedObject var viewModel: TimerViewModel
+    @AppStorage("selectedLanguage") var selectedLanguageRawValue: String = AppLanguage.english.rawValue
     var timer: TimerModel
     
     var body: some View {
@@ -40,7 +41,7 @@ struct TimerItemView: View {
                         viewModel.startTimer(timer: timer)
                     }
                 }) {
-                    Text(timer.isTimerRunning ? "პაუზა" : "დაწყება")
+                    Text(timer.isTimerRunning ? selectedLanguageRawValue == "English" ? "Stop" : "პაუზა" : selectedLanguageRawValue == "English" ? "Start" : "დაწყება")
                         .font(.headline)
                         .foregroundColor(.white)
                         .frame(maxWidth: .infinity)
@@ -52,7 +53,7 @@ struct TimerItemView: View {
                 Button(action: {
                     viewModel.restartTimer(timer: timer)
                 }) {
-                    Text("გადატვირთვა")
+                    Text(selectedLanguageRawValue == "English" ? "Restart" : "გადატვირთვა")
                         .font(.headline)
                         .foregroundColor(.white)
                         .frame(maxWidth: .infinity)

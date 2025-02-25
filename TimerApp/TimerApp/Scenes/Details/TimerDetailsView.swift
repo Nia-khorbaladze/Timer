@@ -10,6 +10,8 @@ import SwiftUI
 struct TimerDetailsView: View {
     @ObservedObject var viewModel: TimerViewModel
     @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
+    @AppStorage("selectedLanguage") var selectedLanguageRawValue: String = AppLanguage.english.rawValue
+
     let timerId: UUID
     
     private var timer: TimerModel? {
@@ -59,7 +61,7 @@ struct TimerDetailsView: View {
     private var totalTime: some View {
         VStack(spacing: 10) {
             Image("timer")
-            Text("ხანგრძლივობა")
+            Text(selectedLanguageRawValue == "English" ? "Duration" : "ხანგრძლივობა")
                 .font(.headline)
                 .foregroundColor(.white)
             
@@ -85,19 +87,19 @@ struct TimerDetailsView: View {
     private var timerOverview: some View {
         VStack {
             if let timer = timer {
-                timerRow(title: "დღევანდელი სესიები", value: timer.sessionsCount())
+                timerRow(title: selectedLanguageRawValue == "English" ? "Today's sessions" : "დღევანდელი სესიები", value: timer.sessionsCount(language: AppLanguage(rawValue: selectedLanguageRawValue) ?? .english))
             }
             Divider()
                 .background(Color(hex: "757575"))
                 .frame(width: 320)
             if let timer = timer {
-                timerRow(title: "საშუალო ხანგრძლივობა", value: timer.averageDuration())
+                timerRow(title: selectedLanguageRawValue == "English" ? "Average duration" : "საშუალო ხანგრძლივობა", value: timer.averageDuration(language: AppLanguage(rawValue: selectedLanguageRawValue) ?? .english))
             }
             Divider()
                 .background(Color(hex: "757575"))
                 .frame(width: 320)
             if let timer = timer {
-                timerRow(title: "ჯამური დრო", value: timer.totalDuration())
+                timerRow(title: selectedLanguageRawValue == "English" ? "Total time" : "ჯამური დრო", value: timer.totalDuration(language: AppLanguage(rawValue: selectedLanguageRawValue) ?? .english))
             }
         }
         .padding(.horizontal, 15)
@@ -110,7 +112,7 @@ struct TimerDetailsView: View {
     // MARK: - History
     private var history: some View {
         VStack(alignment: .leading, spacing: 0) {
-            Text("აქტივობის ისტორია")
+            Text(selectedLanguageRawValue == "English" ? "Activity history" : "აქტივობის ისტორია")
                 .font(.headline)
                 .foregroundColor(.white)
                 .padding(.top, 28)
@@ -186,13 +188,13 @@ struct TimerDetailsView: View {
     // MARK: - Helpers
     private func groupedHistory(for timer: TimerModel) -> [(key: String, value: [TimerSession])] {
         let grouped = Dictionary(grouping: timer.history) { session in
-            session.startDate.georgianDate()
+            if selectedLanguageRawValue == "English" {
+                session.startDate.date()
+            } else {
+                session.startDate.georgianDate()
+            }
         }
         return grouped.sorted { $0.key > $1.key }
     }
     
-}
-
-#Preview {
-    TimerView()
 }
